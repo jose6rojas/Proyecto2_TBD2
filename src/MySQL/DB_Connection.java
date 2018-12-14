@@ -7,16 +7,18 @@ public class DB_Connection {
 
     private String BD = "", port = "", username = "", password = "";
 
-//    public static void main(String[] args) {
-//        DB_Connection obj_DB_Connection = new DB_Connection();
-//        System.out.println(obj_DB_Connection.get_connection());
-//    }
+    public static void main(String[] args) {
+        DB_Connection obj_DB_Connection = new DB_Connection();
+        System.out.println(obj_DB_Connection.get_connection());
+    }
     public Connection get_connection() {
         Connection connection = null;
         try {
             Class.forName("com.mysql.jdbc.Driver");
             connection = DriverManager.getConnection("jdbc:mysql://localhost:" + port + "/" + BD + "?autoReconnect=true&useSSL=false", username, password);
             //jdbc:mysql://localhost:3306/Peoples?autoReconnect=true&useSSL=false
+            System.out.println("Hola");
+            
         } catch (Exception e) {
             System.out.println(e);
         }
