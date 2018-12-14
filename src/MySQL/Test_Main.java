@@ -4,6 +4,7 @@ public class Test_Main {
 
     public static void main(String[] args) {
         MySQL objTest = new MySQL();
+        
         //insert data
         //objTest.create_data("1", "Marco", "marco@gmail.com");
         //objTest.create_data("2", "Jorge", "jorge@gmail.com");

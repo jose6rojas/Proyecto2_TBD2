@@ -76,6 +76,6 @@ public class MySQL {
         } catch (Exception e) {
             System.out.println(e);
         }
-
     }
+    
 }
