@@ -7,7 +7,7 @@ import java.sql.ResultSet;
 public class MySQL {
 
     public void create_data(String sl_no, String name, String email) {
-        DB_Connection obj_DB_Connection = new DB_Connection();
+        JDBC_MySQL obj_DB_Connection = new JDBC_MySQL();
         Connection connection = obj_DB_Connection.get_connection();
         PreparedStatement ps = null;
         try {
@@ -24,7 +24,7 @@ public class MySQL {
     }
 
     public void read_data(String sl_no) {
-        DB_Connection obj_DB_Connection = new DB_Connection();
+        JDBC_MySQL obj_DB_Connection = new JDBC_MySQL();
         Connection connection = obj_DB_Connection.get_connection();
         PreparedStatement ps = null;
         ResultSet rs = null;
@@ -46,7 +46,7 @@ public class MySQL {
     }
 
     public void update_data(String sl_no, String new_sl_no, String name, String email) {
-        DB_Connection obj_DB_Connection = new DB_Connection();
+        JDBC_MySQL obj_DB_Connection = new JDBC_MySQL();
         Connection connection = obj_DB_Connection.get_connection();
         PreparedStatement ps = null;
         try {
@@ -64,7 +64,7 @@ public class MySQL {
     }
 
     public void delete_data(String sl_no) {
-        DB_Connection obj_DB_Connection = new DB_Connection();
+        JDBC_MySQL obj_DB_Connection = new JDBC_MySQL();
         Connection connection = obj_DB_Connection.get_connection();
         PreparedStatement ps = null;
         try {

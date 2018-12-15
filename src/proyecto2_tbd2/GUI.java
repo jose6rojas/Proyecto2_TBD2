@@ -2,13 +2,13 @@
 
 package proyecto2_tbd2;
 
-import MySQL.DB_Connection;
+import MySQL.JDBC_MySQL;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 
 public class GUI extends javax.swing.JFrame {
     
-    DB_Connection con_mysql = null;
+    JDBC_MySQL con_mysql = null;
     
     public GUI() {
         initComponents();
@@ -424,17 +424,21 @@ public class GUI extends javax.swing.JFrame {
 
     private void b_destino_conectarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_b_destino_conectarActionPerformed
         // Establecer la conexión a la base de datos destino.
-        con_mysql = new DB_Connection(tf_destino_nombreBD.getText(), tf_destino_puerto.getText(), tf_destino_nombreUsuario.getText(), tf_destino_passUsuario.getText());
-        con_mysql.get_connection();
+        try {
+            con_mysql = new JDBC_MySQL(tf_destino_nombreBD.getText(), tf_destino_puerto.getText(), tf_destino_nombreUsuario.getText(), tf_destino_passUsuario.getText());
+            con_mysql.get_connection();
+            
+            d_destino.dispose();
+            // Muestra la ventana para seleccionar la tablas a ser replicadas.
+            d_tablas.setModal(true);
+            d_tablas.pack();
+            d_tablas.setLocationRelativeTo(this);
+            d_tablas.setVisible(true);
+        } catch (Exception e) {
+            System.out.println(e);
+        }
         
-        // Iniciar el hilo de ejecución del job cuando se seleccione por lo menos una tabla.
-        
-        d_destino.dispose();
-        // Muestra la ventana para seleccionar la tablas a ser replicadas.
-        d_tablas.setModal(true);
-        d_tablas.pack();
-        d_tablas.setLocationRelativeTo(this);
-        d_tablas.setVisible(true);        
+        // Iniciar el hilo de ejecución del job cuando se seleccione por lo menos una tabla.                        
     }//GEN-LAST:event_b_destino_conectarActionPerformed
 
     private void b_addActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_b_addActionPerformed
