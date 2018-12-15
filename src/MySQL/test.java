@@ -1,9 +1,9 @@
 package MySQL;
 
-public class Test_Main {
+public class test {
 
     public static void main(String[] args) {
-        MySQL objTest = new MySQL();
+        queries objTest = new queries();
         
         //insert data
         //objTest.create_data("1", "Marco", "marco@gmail.com");

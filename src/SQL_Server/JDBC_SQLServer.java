@@ -4,17 +4,38 @@ import java.sql.*; // 1. Import the package.
 
 public class JDBC_SQLServer {
     
-    public static void main(String[] args) throws Exception {        
-        String url = "jdbc:sqlserver://localhost:1433;databaseName=aero";
-        String nombreUsuario = "sa";
-        String passUsuario = "Overkill23";
-        
-        String query = "select name from Passenger where ID_psg = 1;";
-        
-        Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver"); // 2. Load and register the driver.
-        Connection con = DriverManager.getConnection(url, nombreUsuario, passUsuario); // 3. Create the connection.
-        System.out.println("La conexión a SQL Server fue establecida exitosamente.");
-        Statement st = con.createStatement(); // 4. Create the statement.
+    // atributos
+    private Connection con = null;
+    private Statement st = null;
+    private ResultSet rs = null;
+    
+    // constructores
+    public JDBC_SQLServer() {}
+    
+    // setters & getters
+    // public void setCon(Connection con) { this.con = con; }
+    public void setSt(Statement st) { this.st = st; }
+    public void setRs(ResultSet rs) { this.rs = rs; }
+    public Connection getCon() { return con; }
+    public Statement getSt() { return st; }
+    public ResultSet getRs() { return rs; }
+    
+    // métodos & funciones
+    public Connection establecerConexion(String nombreBD, String puerto, String nombreUsuario, String passUsuario) {
+        String url = "jdbc:sqlserver://localhost:" + puerto + ";" + "databaseName = " + nombreBD;
+        try {
+            Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver"); // 2. Load and register the driver.
+            con = DriverManager.getConnection(url, nombreUsuario, passUsuario); // 3. Create the connection.            
+            System.out.println("La conexión a SQL Server fue establecida exitosamente.");
+        } catch (Exception e) {
+            System.out.println("La conexión no pudo ser establecida.");
+            System.out.println(e);
+        }
+        return con;
+    }
+    
+    /* public static void main(String[] args) throws Exception {                
+        /* Statement st = con.createStatement(); // 4. Create the statement.
         ResultSet rs = st.executeQuery(query); // 5. Execute the query.
         
         // 6. Process the results.
@@ -24,7 +45,7 @@ public class JDBC_SQLServer {
         
         // 7. Close
         st.close();
-        con.close();        
-    }
+        con.close();
+    } */
     
 }

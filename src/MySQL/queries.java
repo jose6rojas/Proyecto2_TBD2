@@ -4,9 +4,9 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
-public class MySQL {
+public class queries {
 
-    public void create_data(String sl_no, String name, String email) {
+    /* public void create_data(String sl_no, String name, String email) {
         JDBC_MySQL obj_DB_Connection = new JDBC_MySQL();
         Connection connection = obj_DB_Connection.get_connection();
         PreparedStatement ps = null;
@@ -76,6 +76,6 @@ public class MySQL {
         } catch (Exception e) {
             System.out.println(e);
         }
-    }
+    } */
     
 }

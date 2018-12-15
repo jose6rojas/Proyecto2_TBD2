@@ -2,12 +2,13 @@
 
 package proyecto2_tbd2;
 
-import MySQL.JDBC_MySQL;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
+import java.sql.*;
+import SQL_Server.JDBC_SQLServer;
+import MySQL.*;
 
 public class GUI extends javax.swing.JFrame {
     
+    JDBC_SQLServer con_sqlserver = null;
     JDBC_MySQL con_mysql = null;
     
     public GUI() {
@@ -31,7 +32,7 @@ public class GUI extends javax.swing.JFrame {
         tf_origen_nombreBD = new javax.swing.JTextField();
         tf_origen_puerto = new javax.swing.JTextField();
         tf_origen_nombreUsuario = new javax.swing.JTextField();
-        tf_origen_passUsuario = new javax.swing.JTextField();
+        pf_origen_passUsuario = new javax.swing.JPasswordField();
         b_origen_conectar = new javax.swing.JButton();
         d_destino = new javax.swing.JDialog();
         l_destino = new javax.swing.JLabel();
@@ -45,7 +46,7 @@ public class GUI extends javax.swing.JFrame {
         l_destino_nombreUsuario = new javax.swing.JLabel();
         tf_destino_nombreUsuario = new javax.swing.JTextField();
         l_destino_passUsuario = new javax.swing.JLabel();
-        tf_destino_passUsuario = new javax.swing.JTextField();
+        pf_destino_passUsuario = new javax.swing.JPasswordField();
         b_destino_conectar = new javax.swing.JButton();
         d_tablas = new javax.swing.JDialog();
         l_sinReplicar = new javax.swing.JLabel();
@@ -67,6 +68,7 @@ public class GUI extends javax.swing.JFrame {
         l_integrante3 = new javax.swing.JLabel();
         b_continuar = new javax.swing.JButton();
 
+        d_origen.setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         d_origen.setTitle("Configuración de Bases de Datos");
 
         l_origen.setFont(new java.awt.Font("Lucida Grande", 1, 18)); // NOI18N
@@ -84,6 +86,8 @@ public class GUI extends javax.swing.JFrame {
         l_origen_nombreUsuario.setText("Nombre del Usuario");
 
         l_origen_passUsuario.setText("Contraseña del Usuario");
+
+        tf_origen_nombreInstancia.setEnabled(false);
 
         b_origen_conectar.setText("Establecer conexión");
         b_origen_conectar.addActionListener(new java.awt.event.ActionListener() {
@@ -108,11 +112,11 @@ public class GUI extends javax.swing.JFrame {
                             .addComponent(l_origen_passUsuario))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(d_origenLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(tf_origen_passUsuario)
                             .addComponent(tf_origen_nombreUsuario)
                             .addComponent(tf_origen_puerto)
                             .addComponent(tf_origen_nombreBD)
-                            .addComponent(tf_origen_nombreInstancia, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addComponent(tf_origen_nombreInstancia, javax.swing.GroupLayout.DEFAULT_SIZE, 150, Short.MAX_VALUE)
+                            .addComponent(pf_origen_passUsuario)))
                     .addComponent(b_origen_conectar)
                     .addGroup(d_origenLayout.createSequentialGroup()
                         .addComponent(l_origen)
@@ -146,12 +150,13 @@ public class GUI extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(d_origenLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(l_origen_passUsuario)
-                    .addComponent(tf_origen_passUsuario, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(pf_origen_passUsuario, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addComponent(b_origen_conectar)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
+        d_destino.setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         d_destino.setTitle("Configuración de Bases de Datos");
 
         l_destino.setFont(new java.awt.Font("Lucida Grande", 1, 18)); // NOI18N
@@ -161,6 +166,8 @@ public class GUI extends javax.swing.JFrame {
         l_mysql.setText("(MySQL)");
 
         l_destino_nombreInstancia.setText("Nombre de la Instancia");
+
+        tf_destino_nombreInstancia.setEnabled(false);
 
         l_destino_nombreBD.setText("Nombre de la Base de Datos");
 
@@ -193,11 +200,11 @@ public class GUI extends javax.swing.JFrame {
                             .addComponent(l_destino_passUsuario))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(d_destinoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(tf_destino_passUsuario)
                             .addComponent(tf_destino_nombreUsuario)
                             .addComponent(tf_destino_puerto)
                             .addComponent(tf_destino_nombreBD)
-                            .addComponent(tf_destino_nombreInstancia, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addComponent(tf_destino_nombreInstancia, javax.swing.GroupLayout.DEFAULT_SIZE, 150, Short.MAX_VALUE)
+                            .addComponent(pf_destino_passUsuario)))
                     .addComponent(b_destino_conectar)
                     .addGroup(d_destinoLayout.createSequentialGroup()
                         .addComponent(l_destino)
@@ -231,7 +238,7 @@ public class GUI extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(d_destinoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(l_destino_passUsuario)
-                    .addComponent(tf_destino_passUsuario, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(pf_destino_passUsuario, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addComponent(b_destino_conectar)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
@@ -281,45 +288,45 @@ public class GUI extends javax.swing.JFrame {
             d_tablasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(d_tablasLayout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(d_tablasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(d_tablasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addGroup(d_tablasLayout.createSequentialGroup()
                         .addComponent(l_sinReplicar)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(l_replicando))
                     .addGroup(d_tablasLayout.createSequentialGroup()
                         .addGroup(d_tablasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(sp_sinReplicar, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(b_guardar))
+                            .addComponent(b_guardar)
+                            .addComponent(sp_sinReplicar, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(d_tablasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(b_add)
                             .addComponent(b_sub))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(d_tablasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(b_cancelar)
-                            .addComponent(sp_replicando, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(0, 0, Short.MAX_VALUE)))
+                            .addComponent(sp_replicando, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(b_cancelar))))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         d_tablasLayout.setVerticalGroup(
             d_tablasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(d_tablasLayout.createSequentialGroup()
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, d_tablasLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(d_tablasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(l_sinReplicar)
                     .addComponent(l_replicando))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(d_tablasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
-                    .addGroup(d_tablasLayout.createSequentialGroup()
-                        .addComponent(b_add)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(b_sub))
-                    .addComponent(sp_replicando, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(sp_sinReplicar, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 132, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18)
-                .addGroup(d_tablasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(b_cancelar)
-                    .addComponent(b_guardar))
+                .addGroup(d_tablasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(d_tablasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
+                        .addGroup(d_tablasLayout.createSequentialGroup()
+                            .addComponent(b_add)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addComponent(b_sub))
+                        .addComponent(sp_sinReplicar, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(sp_replicando, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(d_tablasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(b_guardar)
+                    .addComponent(b_cancelar))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -412,8 +419,15 @@ public class GUI extends javax.swing.JFrame {
     }//GEN-LAST:event_b_continuarActionPerformed
 
     private void b_origen_conectarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_b_origen_conectarActionPerformed
-        // Establecer la conexión a la base de datos origen.
-
+        // Establece la conexión a la base de datos origen.
+        // TO DO: Validar cuando una conexión no sea exitosa.
+        con_sqlserver = new JDBC_SQLServer();        
+        con_sqlserver.establecerConexion(
+            tf_origen_nombreBD.getText(), 
+            tf_origen_puerto.getText(), 
+            tf_origen_nombreUsuario.getText(), 
+            pf_origen_passUsuario.getText());
+        // TO DO: Cerrar esta conexión más adelante.
         d_origen.dispose();
         // Muestra la ventana para hacer la conexión a la base de datos destino.        
         d_destino.setModal(true);
@@ -423,22 +437,21 @@ public class GUI extends javax.swing.JFrame {
     }//GEN-LAST:event_b_origen_conectarActionPerformed
 
     private void b_destino_conectarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_b_destino_conectarActionPerformed
-        // Establecer la conexión a la base de datos destino.
-        try {
-            con_mysql = new JDBC_MySQL(tf_destino_nombreBD.getText(), tf_destino_puerto.getText(), tf_destino_nombreUsuario.getText(), tf_destino_passUsuario.getText());
-            con_mysql.get_connection();
-            
-            d_destino.dispose();
-            // Muestra la ventana para seleccionar la tablas a ser replicadas.
-            d_tablas.setModal(true);
-            d_tablas.pack();
-            d_tablas.setLocationRelativeTo(this);
-            d_tablas.setVisible(true);
-        } catch (Exception e) {
-            System.out.println(e);
-        }
-        
-        // Iniciar el hilo de ejecución del job cuando se seleccione por lo menos una tabla.                        
+        // Establece la conexión a la base de datos destino.
+        // TO DO: Validar cuando una conexión no sea exitosa.
+        con_mysql = new JDBC_MySQL();
+        con_mysql.establecerConexion(
+            tf_destino_nombreBD.getText(), 
+            tf_destino_puerto.getText(), 
+            tf_destino_nombreUsuario.getText(), 
+            pf_destino_passUsuario.getText());
+        // TO DO: Cerrar esta conexión más adelante.
+        d_destino.dispose();
+        // Muestra la ventana para seleccionar la tablas que serán replicadas.
+        d_tablas.setModal(true);
+        d_tablas.pack();
+        d_tablas.setLocationRelativeTo(this);
+        d_tablas.setVisible(true);
     }//GEN-LAST:event_b_destino_conectarActionPerformed
 
     private void b_addActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_b_addActionPerformed
@@ -528,17 +541,17 @@ public class GUI extends javax.swing.JFrame {
     private javax.swing.JList<String> list_replicando;
     private javax.swing.JList<String> list_sinReplicar;
     private javax.swing.JPanel p_inicio;
+    private javax.swing.JPasswordField pf_destino_passUsuario;
+    private javax.swing.JPasswordField pf_origen_passUsuario;
     private javax.swing.JScrollPane sp_replicando;
     private javax.swing.JScrollPane sp_sinReplicar;
     private javax.swing.JTextField tf_destino_nombreBD;
     private javax.swing.JTextField tf_destino_nombreInstancia;
     private javax.swing.JTextField tf_destino_nombreUsuario;
-    private javax.swing.JTextField tf_destino_passUsuario;
     private javax.swing.JTextField tf_destino_puerto;
     private javax.swing.JTextField tf_origen_nombreBD;
     private javax.swing.JTextField tf_origen_nombreInstancia;
     private javax.swing.JTextField tf_origen_nombreUsuario;
-    private javax.swing.JTextField tf_origen_passUsuario;
     private javax.swing.JTextField tf_origen_puerto;
     // End of variables declaration//GEN-END:variables
 }
