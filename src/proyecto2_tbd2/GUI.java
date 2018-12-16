@@ -5,11 +5,19 @@ package proyecto2_tbd2;
 import java.sql.*;
 import SQL_Server.JDBC_SQLServer;
 import MySQL.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
+import javax.swing.DefaultListModel;
+import javax.swing.JOptionPane;
 
 public class GUI extends javax.swing.JFrame {
     
     JDBC_SQLServer con_sqlserver = null;
     JDBC_MySQL con_mysql = null;
+    
+    ArrayList<String> tablasSinReplicar = new ArrayList();
+    ArrayList<String> tablasReplicando = new ArrayList();
     
     public GUI() {
         initComponents();
@@ -57,8 +65,9 @@ public class GUI extends javax.swing.JFrame {
         l_replicando = new javax.swing.JLabel();
         sp_replicando = new javax.swing.JScrollPane();
         list_replicando = new javax.swing.JList<>();
-        b_guardar = new javax.swing.JButton();
-        b_cancelar = new javax.swing.JButton();
+        l_job = new javax.swing.JLabel();
+        b_job = new javax.swing.JButton();
+        b_finalizar = new javax.swing.JButton();
         p_inicio = new javax.swing.JPanel();
         l_proyecto2 = new javax.swing.JLabel();
         l_asignatura = new javax.swing.JLabel();
@@ -248,6 +257,8 @@ public class GUI extends javax.swing.JFrame {
 
         l_sinReplicar.setText("Sin Replicar");
 
+        list_sinReplicar.setModel(new DefaultListModel());
+        list_sinReplicar.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         sp_sinReplicar.setViewportView(list_sinReplicar);
 
         b_add.setText(">>");
@@ -266,19 +277,23 @@ public class GUI extends javax.swing.JFrame {
 
         l_replicando.setText("Replicando");
 
+        list_replicando.setModel(new DefaultListModel());
+        list_replicando.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         sp_replicando.setViewportView(list_replicando);
 
-        b_guardar.setText("Guardar");
-        b_guardar.addActionListener(new java.awt.event.ActionListener() {
+        l_job.setText("HH:MM:SS");
+
+        b_job.setText("Job");
+        b_job.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                b_guardarActionPerformed(evt);
+                b_jobActionPerformed(evt);
             }
         });
 
-        b_cancelar.setText("Cancelar");
-        b_cancelar.addActionListener(new java.awt.event.ActionListener() {
+        b_finalizar.setText("Finalizar");
+        b_finalizar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                b_cancelarActionPerformed(evt);
+                b_finalizarActionPerformed(evt);
             }
         });
 
@@ -295,7 +310,10 @@ public class GUI extends javax.swing.JFrame {
                         .addComponent(l_replicando))
                     .addGroup(d_tablasLayout.createSequentialGroup()
                         .addGroup(d_tablasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(b_guardar)
+                            .addGroup(d_tablasLayout.createSequentialGroup()
+                                .addComponent(l_job)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(b_job))
                             .addComponent(sp_sinReplicar, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(d_tablasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -304,7 +322,7 @@ public class GUI extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(d_tablasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(sp_replicando, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(b_cancelar))))
+                            .addComponent(b_finalizar))))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         d_tablasLayout.setVerticalGroup(
@@ -324,9 +342,10 @@ public class GUI extends javax.swing.JFrame {
                         .addComponent(sp_sinReplicar, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(sp_replicando, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(d_tablasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(b_guardar)
-                    .addComponent(b_cancelar))
+                .addGroup(d_tablasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(b_job)
+                    .addComponent(b_finalizar)
+                    .addComponent(l_job))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -447,6 +466,12 @@ public class GUI extends javax.swing.JFrame {
             pf_destino_passUsuario.getText());
         // TO DO: Cerrar esta conexión más adelante.
         d_destino.dispose();
+        // Inicializa el modelo del JList de las tablas sin replicar.
+        DefaultListModel modeloSinReplicar = (DefaultListModel) list_sinReplicar.getModel();
+        modeloSinReplicar.addElement("Company");
+        modeloSinReplicar.addElement("Pass_in_trip");
+        modeloSinReplicar.addElement("Passenger");
+        modeloSinReplicar.addElement("Trip");
         // Muestra la ventana para seleccionar la tablas que serán replicadas.
         d_tablas.setModal(true);
         d_tablas.pack();
@@ -456,22 +481,100 @@ public class GUI extends javax.swing.JFrame {
 
     private void b_addActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_b_addActionPerformed
         // Se agrega la tabla seleccionada a la lista de tablas que se estarán replicando.
+        DefaultListModel modeloSinReplicar = (DefaultListModel) list_sinReplicar.getModel();
+        // Valida que una tabla haya sido seleccionada.
+        if (list_sinReplicar.getSelectedIndex() == -1) {
+            JOptionPane.showMessageDialog(d_tablas, "Por favor seleccione una tabla.", "Tablas Sin Replicar", JOptionPane.WARNING_MESSAGE);
+        } else {
+            String tablaSeleccionada = list_sinReplicar.getSelectedValue(); // Obtiene la tabla que fue seleccionada.
+            DefaultListModel modeloReplicando = (DefaultListModel) list_replicando.getModel();
+            modeloReplicando.addElement(tablaSeleccionada); // Agrega la tabla seleccionada a la lista de tablas que se estarán replicando.
+            list_replicando.setModel(modeloReplicando);
+            modeloSinReplicar.removeElement(tablaSeleccionada); // Elimina la tabla seleccionada de la lista de tablas sin replicar.
+            list_sinReplicar.setModel(modeloSinReplicar);
+        }
     }//GEN-LAST:event_b_addActionPerformed
 
     private void b_subActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_b_subActionPerformed
         // Se quita la tabla seleccionada de la lista de tablas que se estarán replicando.
+        DefaultListModel modeloReplicando = (DefaultListModel) list_replicando.getModel();
+        // Valida que una tabla haya sido seleccionada.
+        if (modeloReplicando.isEmpty()) {            
+            JOptionPane.showMessageDialog(d_tablas, "Por favor agregue por lo menos una tabla.", "Tablas que serán Replicadas", JOptionPane.WARNING_MESSAGE);
+        } else if (list_replicando.getSelectedIndex() == -1) {
+            JOptionPane.showMessageDialog(d_tablas, "Por favor seleccione una tabla.", "Tablas que serán Replicadas", JOptionPane.WARNING_MESSAGE);
+        } else {
+            String tablaSeleccionada = list_replicando.getSelectedValue();
+            DefaultListModel modeloSinReplicar = (DefaultListModel) list_sinReplicar.getModel();
+            modeloSinReplicar.addElement(tablaSeleccionada);
+            list_sinReplicar.setModel(modeloSinReplicar);
+            modeloReplicando.removeElement(tablaSeleccionada);
+            list_replicando.setModel(modeloReplicando);
+        }
     }//GEN-LAST:event_b_subActionPerformed
 
-    private void b_guardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_b_guardarActionPerformed
-        // Se guardan las tablas de la lista de tablas que se estarán replicando.
+    private void b_jobActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_b_jobActionPerformed
+        // Actualiza la etiqueta del job con la hora del sistema.
+        Calendar calendario = new GregorianCalendar();
+        int hora = calendario.get(Calendar.HOUR_OF_DAY);
+        int minutos = calendario.get(Calendar.MINUTE);
+        int segundos = calendario.get(Calendar.SECOND);
+        l_job.setText(hora + ":" + minutos + ":" + segundos);
+        
+        // Ejecuta el job para las tablas que fueron seleccionadas.
+        DefaultListModel modeloReplicando = (DefaultListModel) list_replicando.getModel();        
+        String cargarBitacora = "select * from Bitacora;";
+        try {
+            // SQL Server
+            Statement st_origen = con_sqlserver.getCon().createStatement();
+            ResultSet rs_origen = st_origen.executeQuery(cargarBitacora);
+            String operacion;
+            
+            String tabla;
+            // int a = 0;
+            while(rs_origen.next()) { // Revisa todas las tuplas de la tabla Bitacora.
+                tabla = rs_origen.getString(2); // Obtiene el nombre de la tabla a la cual pertenece la operación.
+                // System.out.println(a + " - " +tabla);
+                for (int i = 0; i < modeloReplicando.size(); i++) { // Recorre la lista de tablas seleccionadas.
+                    // System.out.println(modeloReplicando.get(i));
+                    if (tabla.equals(modeloReplicando.get(i))) { // Revisa que el nombre de la tabla a la cual pertenece la operación sea igual a alguna de las tablas seleccionadas.
+                        // System.out.println("check");
+                        if (rs_origen.getBoolean(4) == false) { // Revisa que la operación no haya sido replicada.
+                            // Replica la operación en MySQL.
+                            operacion = rs_origen.getString(3);
+                            Statement st_destino = con_mysql.getCon().createStatement();
+                            st_destino.executeUpdate(operacion); // Replicación
+                            st_destino.close();
+                            // Marca la tupla que fue replicada.                            
+                            Statement st_replicada = con_sqlserver.getCon().createStatement();
+                            st_replicada.executeUpdate("update Bitacora set Replicada = 1 where Id = " + rs_origen.getInt(1) + ";");
+                            st_replicada.close();
+                        }
+                    }
+                }
+                // a++;
+            }
+            st_origen.close();
+            System.out.println("¡El job se ejecutó exitosamente!");
+            // con_sqlserver.getCon().close();
+        } catch (Exception e) {
+            System.out.println("Ocurrió un error al ejecutar el job.");
+            System.out.println(e);
+            // e.printStackTrace();
+        }
+    }//GEN-LAST:event_b_jobActionPerformed
 
-        /* Se podría mostrar una ventana que visualice una etiqueta 
-        que se actualice cada vez que se ejecute el job. */
-    }//GEN-LAST:event_b_guardarActionPerformed
-
-    private void b_cancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_b_cancelarActionPerformed
-        // Se podría detener el job.
-    }//GEN-LAST:event_b_cancelarActionPerformed
+    private void b_finalizarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_b_finalizarActionPerformed
+        // Cierra las conexiones y finaliza el programa.
+        try {
+            con_sqlserver.getCon().close();
+            con_mysql.getCon().close();
+            System.exit(0);
+        } catch (Exception e) {
+            System.out.println("Ocurrió un error al finalizar el programa.");
+            e.printStackTrace();
+        }        
+    }//GEN-LAST:event_b_finalizarActionPerformed
 
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */
@@ -507,10 +610,10 @@ public class GUI extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton b_add;
-    private javax.swing.JButton b_cancelar;
     private javax.swing.JButton b_continuar;
     private javax.swing.JButton b_destino_conectar;
-    private javax.swing.JButton b_guardar;
+    private javax.swing.JButton b_finalizar;
+    private javax.swing.JButton b_job;
     private javax.swing.JButton b_origen_conectar;
     private javax.swing.JButton b_sub;
     private javax.swing.JDialog d_destino;
@@ -527,6 +630,7 @@ public class GUI extends javax.swing.JFrame {
     private javax.swing.JLabel l_integrante1;
     private javax.swing.JLabel l_integrante2;
     private javax.swing.JLabel l_integrante3;
+    private javax.swing.JLabel l_job;
     private javax.swing.JLabel l_mysql;
     private javax.swing.JLabel l_origen;
     private javax.swing.JLabel l_origen_nombreBD;
